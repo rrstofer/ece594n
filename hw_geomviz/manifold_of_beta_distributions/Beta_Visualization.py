@@ -25,7 +25,7 @@ class Beta:
     -------
     Plots
     """
-    def plot(self,ax,size):
+    def plot(self,point,ax,size=None, **kwargs):
         """ Draws the beta manifold
 
                 by Yiliang Chen
@@ -36,7 +36,13 @@ class Beta:
                     Defines the range of the manifold to be shown
 
         """
-        ax.set(xlim=(0, size[0]), ylim=(0, size[1]))
+        print(f"Point: {point}") # point
+        if size == None:
+            limit = max(point[0],point[1]) + 0.1 * max(point[0],point[1])
+            ax.set(xlim=(0, limit), ylim=(0, limit))
+        else:
+            ax.set(xlim=(0, size[0]), ylim=(0, size[1]))
+        ax.scatter(point[0],point[1],**kwargs)
 
 
 

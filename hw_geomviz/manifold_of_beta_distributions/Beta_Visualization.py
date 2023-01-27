@@ -168,7 +168,6 @@ class Beta:
         fig.show()
         
     def plot_geodesic(self,
-                      ax,
                       initial_point,
                       end_point = None,
                       initial_tangent_vec = None,
@@ -177,38 +176,59 @@ class Beta:
                       **kwargs):
         """ geomdesic plot of beta manifold
         
-        by Sunpeng Duan
+        by Sunpeng Duan & Allen Wang 
     
         Parameters
         ----------
         points : array-like, shape=[..., 2]
             Point representing a beta distribution.
         """
-
+    
         
         if end_point is None and initial_tangent_vec is None:
             raise ValueError(
                 "Specify an end point or an initial tangent "
                 "vector to define the geodesic."
             )
-            
-        
+                 
         t = gs.linspace(0, 1, n_points)
             
         if end_point is not None:
+
+            for point in [initial_point, end_point]:
+                x, y = point
+                if x < 0 or y < 0:
+                    raise ValueError("Point {} is not in the first quadrant".format(point))
+
+            upperLimit = np.max(list(zip(initial_point, end_point))) + 1
+            lowerLimit = np.min(list(zip(initial_point, end_point))) - 1
             geod = beta.metric.geodesic(initial_point=initial_point, 
                                         end_point=end_point,
                                         n_steps=n_steps)(t)
-            self.scatter(ax=ax,points=geod,**kwargs)
+            
+            fig = plt.figure(figsize=(5, 5))
+            ax = fig.add_subplot(111)
+            ax.set(xlim=(lowerLimit, upperLimit), ylim=(lowerLimit, upperLimit))
+            ax.scatter(geod[:,0],geod[:,1],**kwargs)
+            ax.set_title("Geodesic between two beta distributions for the Fisher-Rao metric")
+            fig.show()
             
         if initial_tangent_vec is not None:
+            if (initial_point < 0).any():
+                raise ValueError("The initial point is not in the first quadrant")
             geod = beta.metric.geodesic(initial_point=initial_point,
                                         initial_tangent_vec=initial_tangent_vec,
                                         n_steps=n_steps)(t)
-            self.scatter(ax=ax,points=geod,**kwargs)
+            upperLimit = np.max(geod) + 1
+            lowerLimit = np.min(geod) - 1
+            fig = plt.figure(figsize=(5, 5))
+            ax = fig.add_subplot(111)
+            ax.set(xlim=(lowerLimit, upperLimit), ylim=(lowerLimit, upperLimit))
+            ax.scatter(geod[:,0],geod[:,1],**kwargs)
+            ax.set_title("Geodesic between two beta distributions for the Fisher-Rao metric")
+            fig.show()
         
     def plot_geodestic_ball(self,
-                      ax,
                       initial_point,
                       tangent_vecs,
                       n_steps = 100,
@@ -216,7 +236,7 @@ class Beta:
                       **kwargs):
         """ geomdesic plot of beta manifold
         
-        by Sunpeng Duan
+        by Sunpeng Duan & Allen Wang
     
         Parameters
         ----------
@@ -226,8 +246,18 @@ class Beta:
         
         t = gs.linspace(0, 1, n_points)
         
+        fig = plt.figure(figsize=(5, 5))
+        ax = fig.add_subplot(111)
+
+        allPoint = []
         for j in range(len(tangent_vecs)):
             geod = beta.metric.geodesic(initial_point=initial_point, 
                                         initial_tangent_vec=tangent_vecs[j, :],
                                         n_steps = n_steps)
+            allPoint.append(geod)
             ax.plot(*gs.transpose(gs.array([geod(k) for k in t])))
+
+        lowerLimit = np.amin(allPoint) - 2
+        upperLimit = np.amax(allPoint) + 2
+        ax.set(xlim=(lowerLimit, upperLimit), ylim=(lowerLimit, upperLimit))
+        ax.set_title("Geodesic ball of the space of beta distribution")

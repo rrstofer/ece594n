@@ -5,6 +5,7 @@ import geomstats.visualization as visualization
 from geomstats.geometry.special_euclidean import SpecialEuclidean
 
 import matplotlib
+import numpy as np
 import matplotlib.pyplot as plt
 
 SE2_GROUP = SpecialEuclidean(n=2, point_type="matrix")
@@ -25,26 +26,40 @@ class Beta:
     -------
     Plots
     """
-    def plot(self,point,ax,size=None, **kwargs):
+
+    def __init__(self):
+        pass        
+
+    def plot(self,points,size=None,**kwargs):
         """ Draws the beta manifold
 
-                by Yiliang Chen
+        by Yiliang Chen & Marianne Arriola & Ryan Stofer
 
-                Parameters
-                ----------
-                size : array-like, shape=[..., 2]
-                    Defines the range of the manifold to be shown
+        Parameters
+        ----------
+        points : array-like, shape=[..., 2]
+            Points to be plotted.
+        size : array-like, shape=[..., 2]
+            Defines the range of the manifold to be shown
+        
+    	"""
+        assert len(points) > 0, "No points given"
+        assert np.all(points > 0), "Points must be in the upper-right quadrant of Euclidean space"
+        assert (points.shape[-1] == 2 and len(points.shape) == 2), "Points must lie in 2D space"
 
-        """
-        print(f"Point: {point}") # point
-        if size == None:
-            limit = max(point[0],point[1]) + 0.1 * max(point[0],point[1])
+        print(f"Points: {points}") # point
+        fig = plt.figure(figsize=(5, 5))
+        ax = fig.add_subplot(111)
+        if not size:
+            limit = np.max(points) + 0.1
             ax.set(xlim=(0, limit), ylim=(0, limit))
         else:
             ax.set(xlim=(0, size[0]), ylim=(0, size[1]))
-        ax.scatter(point[0],point[1],**kwargs)
-
-
+        ax.scatter(points[:,0],points[:,1],**kwargs)
+        plt.title('Points on 2D Manifold of Beta Distributions')
+        plt.xlabel(r'$\alpha$')
+        plt.ylabel(r'$\beta$')
+        fig.show()
 
     def plot_rendering(self,ax,initial_point=[0,0],size=[10,10],sampling_period=1):
         """ Draws the beta manifold
@@ -74,15 +89,15 @@ class Beta:
     def plot_grid(self,ax,size,initial_point=[0,0],n_steps=100,n_points=10,step=1,**kwargs):
         """ Draws the grids of beta manifold
 
-                by Yiliang Chen
+        by Yiliang Chen
 
-                Parameters
-                ----------
-                size : array-like, shape=[..., 2]
-                    Defines the range of the grids to be shown
+        Parameters
+        ----------
+        size : array-like, shape=[..., 2]
+            Defines the range of the grids to be shown
 
-                step : float, >0
-                    the length of a step for the grid
+        step : float, >0
+            the length of a step for the grid
 
         """
         sz = gs.array(size)

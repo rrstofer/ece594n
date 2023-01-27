@@ -28,10 +28,8 @@ class TestVisualizationBeta(tests.conftest.TestCase):
         self.beta_viz = Beta()
 
     def test_plot_beta(self):
-        point = gs.random.rand(2,2)
+        points = gs.random.rand(2,2)
         self.beta_viz.plot(points)
-
-
 
 
     @staticmethod

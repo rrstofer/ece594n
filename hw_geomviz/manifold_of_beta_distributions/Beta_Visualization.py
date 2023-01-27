@@ -6,6 +6,7 @@ import geomstats.visualization as visualization
 from geomstats.geometry.special_euclidean import SpecialEuclidean
 
 import matplotlib
+import math
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -51,7 +52,8 @@ class Beta:
         if not len(points) > 0: raise ValueError("No points given")
         if not np.all(points > 0): raise ValueError("Points must be in the upper-right quadrant of Euclidean space")
         if not ((points.shape[-1] == 2 and len(points.shape) == 2)): raise("Points must lie in 2D space")
-        limit = np.max(points) + 1
+        limit = np.max(points)
+        limit += (limit/10)
         return points, limit
 
     def plot(self,points,size=None,**kwargs):

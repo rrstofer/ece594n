@@ -43,6 +43,11 @@ class Beta:
             Defines the range of the manifold to be shown
         
     	"""
+        # format points for processing
+        points = np.array(points)
+        if len(points.shape) == 1:
+            points = np.expand_dims(points, axis=0)
+
         assert len(points) > 0, "No points given"
         assert np.all(points > 0), "Points must be in the upper-right quadrant of Euclidean space"
         assert (points.shape[-1] == 2 and len(points.shape) == 2), "Points must lie in 2D space"
@@ -51,7 +56,7 @@ class Beta:
         fig = plt.figure(figsize=(5, 5))
         ax = fig.add_subplot(111)
         if not size:
-            limit = np.max(points) + 0.1
+            limit = np.max(points) + 1
             ax.set(xlim=(0, limit), ylim=(0, limit))
         else:
             ax.set(xlim=(0, size[0]), ylim=(0, size[1]))

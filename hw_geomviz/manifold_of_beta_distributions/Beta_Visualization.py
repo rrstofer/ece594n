@@ -1,3 +1,4 @@
+from multiprocessing.sharedctypes import Value
 import geomstats.backend as gs
 from geomstats.information_geometry.beta import BetaDistributions
 
@@ -28,7 +29,30 @@ class Beta:
     """
 
     def __init__(self):
-        pass        
+        pass
+
+    def process_points(self,points,**kwargs):
+        """ Confirms that points passed into function lie on manifold and prepares them for plotting
+
+        by Marianne Arriola
+
+        Parameters
+        ----------
+        points : array-like, shape=[..., 2]
+            Points to be plotted.
+        
+    	"""
+        # TODO: figure out how this function works
+        # points = gs.to_numpy(points)
+        points = np.array(points)
+        if len(points.shape) == 1:
+            points = np.expand_dims(points, axis=0)
+
+        if not len(points) > 0: raise ValueError("No points given")
+        if not np.all(points > 0): raise ValueError("Points must be in the upper-right quadrant of Euclidean space")
+        if not ((points.shape[-1] == 2 and len(points.shape) == 2)): raise("Points must lie in 2D space")
+        limit = np.max(points) + 1
+        return points, limit
 
     def plot(self,points,size=None,**kwargs):
         """ Draws the beta manifold
@@ -43,20 +67,11 @@ class Beta:
             Defines the range of the manifold to be shown
         
     	"""
-        # format points for processing
-        points = np.array(points)
-        if len(points.shape) == 1:
-            points = np.expand_dims(points, axis=0)
-
-        assert len(points) > 0, "No points given"
-        assert np.all(points > 0), "Points must be in the upper-right quadrant of Euclidean space"
-        assert (points.shape[-1] == 2 and len(points.shape) == 2), "Points must lie in 2D space"
-
+        points,limit = self.process_points(points)
         print(f"Points: {points}") # point
         fig = plt.figure(figsize=(5, 5))
         ax = fig.add_subplot(111)
         if not size:
-            limit = np.max(points) + 1
             ax.set(xlim=(0, limit), ylim=(0, limit))
         else:
             ax.set(xlim=(0, size[0]), ylim=(0, size[1]))
@@ -131,7 +146,7 @@ class Beta:
                     ax.plot(*gs.transpose(gs.array([grid_v(k) for k in t])))
 
 
-    def scatter(self,ax,points,**kwargs):
+    def scatter(self,points,**kwargs):
         """ Scatter plot of beta manifold
         
         by Sunpeng Duan
@@ -141,9 +156,16 @@ class Beta:
         points : array-like, shape=[..., 2]
             Point representing a beta distribution.
         """
-        points_x = [gs.to_numpy(point[0]) for point in points]
-        points_y = [gs.to_numpy(point[1]) for point in points]
-        ax.scatter(points_x,points_y,**kwargs)
+        points,limit = self.process_points(points)
+
+        fig = plt.figure(figsize=(5, 5))
+        ax = fig.add_subplot(111)
+        ax.set(xlim=(0, limit), ylim=(0, limit))
+        ax.scatter(points[:,0],points[:,1],**kwargs)
+        ax.set_title("Scatter plot of beta manifolds")
+        plt.xlabel(r'$\alpha$')
+        plt.ylabel(r'$\beta$')
+        fig.show()
         
     def plot_geodesic(self,
                       ax,

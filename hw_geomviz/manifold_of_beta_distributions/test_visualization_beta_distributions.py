@@ -1,5 +1,6 @@
 """Unit tests for visualization."""
 
+import random
 import matplotlib
 import matplotlib.pyplot as plt
 
@@ -29,6 +30,11 @@ class TestVisualizationBeta(tests.conftest.TestCase):
 
     def test_plot_beta(self):
         points = gs.random.rand(2,2)
+        self.beta_viz.plot(points)
+
+    def test_scatter_beta(self):
+        num_points = random.randint(2,50)
+        points = gs.random.rand(num_points,2)
         self.beta_viz.plot(points)
 
 

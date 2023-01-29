@@ -81,7 +81,7 @@ class Beta:
         plt.title('Points on 2D Manifold of Beta Distributions')
         plt.xlabel(r'$\alpha$')
         plt.ylabel(r'$\beta$')
-        fig.show()
+        #fig.show()
 
     def plot_rendering(self,ax,initial_point=[0,0],size=[10,10],sampling_period=1):
         """ Draws the beta manifold
@@ -167,7 +167,7 @@ class Beta:
         ax.set_title("Scatter plot of beta manifolds")
         plt.xlabel(r'$\alpha$')
         plt.ylabel(r'$\beta$')
-        fig.show()
+        #fig.show()
         
     def plot_geodesic(self,
                       initial_point,
@@ -213,7 +213,7 @@ class Beta:
             ax.set(xlim=(lowerLimit, upperLimit), ylim=(lowerLimit, upperLimit))
             ax.scatter(geod[:,0],geod[:,1],**kwargs)
             ax.set_title("Geodesic between two beta distributions for the Fisher-Rao metric")
-            fig.show()
+            #fig.show()
             
         if initial_tangent_vec is not None:
             if (initial_point < 0).any():
@@ -228,7 +228,7 @@ class Beta:
             ax.set(xlim=(lowerLimit, upperLimit), ylim=(lowerLimit, upperLimit))
             ax.scatter(geod[:,0],geod[:,1],**kwargs)
             ax.set_title("Geodesic between two beta distributions for the Fisher-Rao metric")
-            fig.show()
+            #fig.show()
         
     def plot_geodestic_ball(self,
                       initial_point,
@@ -251,15 +251,18 @@ class Beta:
         fig = plt.figure(figsize=(5, 5))
         ax = fig.add_subplot(111)
 
-        allPoint = []
+        allPoint = np.array([])
         for j in range(len(tangent_vecs)):
             geod = beta.metric.geodesic(initial_point=initial_point, 
                                         initial_tangent_vec=tangent_vecs[j, :],
                                         n_steps = n_steps)
-            allPoint.append(geod)
+            allPoint = np.concatenate((allPoint, geod(t).flatten()))
+        
             ax.plot(*gs.transpose(gs.array([geod(k) for k in t])))
 
-        lowerLimit = np.amin(allPoint) - 2
-        upperLimit = np.amax(allPoint) + 2
+        lowerLimit = np.min(allPoint) - 0.5
+        upperLimit = np.max(allPoint) + 0.5
         ax.set(xlim=(lowerLimit, upperLimit), ylim=(lowerLimit, upperLimit))
         ax.set_title("Geodesic ball of the space of beta distribution")
+        plt.xlabel(r'$\alpha$')
+        plt.ylabel(r'$\beta$')

@@ -1,5 +1,6 @@
 """Unit tests for visualization."""
 
+matplotlib.use("Agg")  # NOQA
 import random
 import matplotlib
 import matplotlib.pyplot as plt
@@ -19,7 +20,7 @@ from geomstats.information_geometry.beta import BetaDistributions
 
 from hw_geomviz.manifold_of_beta_distributions.Beta_Visualization import Beta
 
-matplotlib.use("Agg")  # NOQA
+
 
 
 class TestVisualizationBeta(tests.conftest.TestCase):

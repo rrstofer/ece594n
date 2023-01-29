@@ -83,10 +83,10 @@ class Beta:
         plt.ylabel(r'$\beta$')
         #fig.show()
 
-    def plot_rendering(self,ax,initial_point=[0,0],size=[10,10],sampling_period=1):
+    def plot_rendering(self,initial_point=[0,0],size=[10,10],sampling_period=1):
         """ Draws the beta manifold
 
-                by Yiliang Chen
+                by Yiliang Chen & Allen Wang 
 
                 Parameters
                 ----------
@@ -96,6 +96,10 @@ class Beta:
                 sampling_period: float, >0
                     Defines the sampling period of the sampled data
         """
+        for value in initial_point:
+                if value < 0:
+                    raise ValueError("Initial Point {} is not in the first quadrant".format(initial_point))
+
         sz = gs.array(size)
         if sz.size != 2:
             raise ValueError(
@@ -106,9 +110,15 @@ class Beta:
         points = [[i,j] for i in x for j in y]
         points_x = [i[0] for i in points]
         points_y = [i[1] for i in points]
+        fig = plt.figure(figsize=(5, 5))
+        ax = fig.add_subplot(111)
+        
         ax.scatter(points_x,points_y)
+        plt.xlabel(r'$\alpha$')
+        plt.ylabel(r'$\beta$')
 
-    def plot_grid(self,ax,size,initial_point=[0,0],n_steps=100,n_points=10,step=1,**kwargs):
+    
+    def plot_grid(self,size,initial_point=[0,0],n_steps=100,n_points=10,step=1,**kwargs):
         """ Draws the grids of beta manifold
 
         by Yiliang Chen
@@ -122,6 +132,10 @@ class Beta:
             the length of a step for the grid
 
         """
+        for value in initial_point:
+            if value < 0:
+                raise ValueError("Initial Point {} is not in the first quadrant".format(initial_point))
+
         sz = gs.array(size)
         if sz.size != 2:
             raise ValueError(
@@ -131,6 +145,9 @@ class Beta:
         gF = [(initial_point[1]+i*step) for i in range(size[1])]
 
         t = gs.linspace(0, 1, n_points)
+        fig = plt.figure(figsize=(5, 5))
+        ax = fig.add_subplot(111)
+
         for i in b:
             for j in gF:
                 start = [i,j]
@@ -146,7 +163,8 @@ class Beta:
                                                 end_point=end_v,
                                                 n_steps=n_steps)
                     ax.plot(*gs.transpose(gs.array([grid_v(k) for k in t])))
-
+        plt.xlabel(r'$\alpha$')
+        plt.ylabel(r'$\beta$')
 
     def scatter(self,points,**kwargs):
         """ Scatter plot of beta manifold
@@ -213,6 +231,8 @@ class Beta:
             ax.set(xlim=(lowerLimit, upperLimit), ylim=(lowerLimit, upperLimit))
             ax.scatter(geod[:,0],geod[:,1],**kwargs)
             ax.set_title("Geodesic between two beta distributions for the Fisher-Rao metric")
+            plt.xlabel(r'$\alpha$')
+            plt.ylabel(r'$\beta$')
             #fig.show()
             
         if initial_tangent_vec is not None:
@@ -228,6 +248,8 @@ class Beta:
             ax.set(xlim=(lowerLimit, upperLimit), ylim=(lowerLimit, upperLimit))
             ax.scatter(geod[:,0],geod[:,1],**kwargs)
             ax.set_title("Geodesic between two beta distributions for the Fisher-Rao metric")
+            plt.xlabel(r'$\alpha$')
+            plt.ylabel(r'$\beta$')
             #fig.show()
         
     def plot_geodestic_ball(self,

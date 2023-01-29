@@ -1,6 +1,5 @@
 """Unit tests for visualization."""
 
-matplotlib.use("Agg")  # NOQA
 import random
 import matplotlib
 import matplotlib.pyplot as plt
@@ -21,7 +20,7 @@ from geomstats.information_geometry.beta import BetaDistributions
 from hw_geomviz.manifold_of_beta_distributions.Beta_Visualization import Beta
 
 
-
+matplotlib.use("Agg")  # NOQA
 
 class TestVisualizationBeta(tests.conftest.TestCase):
     def setup_method(self):
@@ -38,6 +37,18 @@ class TestVisualizationBeta(tests.conftest.TestCase):
         points = gs.random.rand(num_points,2)
         self.beta_viz.plot(points)
 
+    def test_plot_geodesic_ball(self):
+        center = gs.random.rand(1,2)
+        n_rays = random.randint(2,100)
+        theta = gs.linspace(-gs.pi, gs.pi, n_rays)
+        directions = gs.transpose(gs.stack((gs.cos(theta), gs.sin(theta))))
+
+        ray_length = 1 - random.uniform(0,1)
+        direction_norms = self.Beta.metric.squared_norm(directions, center) ** (1 / 2)
+        unit_vectors = directions / gs.expand_dims(direction_norms, 1)
+        initial_vectors = ray_length * unit_vectors
+        
+        self.beta_viz.plot_geodestic_ball(center,initial_vectors)
 
     @staticmethod
     def test_tutorial_matplotlib():

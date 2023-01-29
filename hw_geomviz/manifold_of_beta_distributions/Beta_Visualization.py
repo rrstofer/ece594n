@@ -1,4 +1,5 @@
 from multiprocessing.sharedctypes import Value
+from re import I
 import geomstats.backend as gs
 from geomstats.information_geometry.beta import BetaDistributions
 
@@ -70,7 +71,6 @@ class Beta:
         
     	"""
         points,limit = self.process_points(points)
-        print(f"Points: {points}") # point
         fig = plt.figure(figsize=(5, 5))
         ax = fig.add_subplot(111)
         if not size:
@@ -169,7 +169,7 @@ class Beta:
     def scatter(self,points,**kwargs):
         """ Scatter plot of beta manifold
         
-        by Sunpeng Duan
+        by Sunpeng Duan & Marianne Arriola
     
         Parameters
         ----------
@@ -185,7 +185,6 @@ class Beta:
         ax.set_title("Scatter plot of beta manifolds")
         plt.xlabel(r'$\alpha$')
         plt.ylabel(r'$\beta$')
-        #fig.show()
         
     def plot_geodesic(self,
                       initial_point,
@@ -250,7 +249,6 @@ class Beta:
             ax.set_title("Geodesic between two beta distributions for the Fisher-Rao metric")
             plt.xlabel(r'$\alpha$')
             plt.ylabel(r'$\beta$')
-            #fig.show()
         
     def plot_geodestic_ball(self,
                       initial_point,
@@ -260,7 +258,7 @@ class Beta:
                       **kwargs):
         """ geomdesic plot of beta manifold
         
-        by Sunpeng Duan & Allen Wang
+        by Sunpeng Duan & Allen Wang & Marianne Arriola
     
         Parameters
         ----------
@@ -273,18 +271,24 @@ class Beta:
         fig = plt.figure(figsize=(5, 5))
         ax = fig.add_subplot(111)
 
-        allPoint = np.array([])
         for j in range(len(tangent_vecs)):
             geod = beta.metric.geodesic(initial_point=initial_point, 
                                         initial_tangent_vec=tangent_vecs[j, :],
                                         n_steps = n_steps)
-            allPoint = np.concatenate((allPoint, geod(t).flatten()))
+            if j == 0:
+                allPoint = geod(t)
+            else:
+                allPoint = np.concatenate((allPoint, geod(t)))
         
             ax.plot(*gs.transpose(gs.array([geod(k) for k in t])))
 
-        lowerLimit = np.min(allPoint) - 0.5
-        upperLimit = np.max(allPoint) + 0.5
-        ax.set(xlim=(lowerLimit, upperLimit), ylim=(lowerLimit, upperLimit))
+        x_lowerLimit = np.min(allPoint[:,0]) ; x_lowerLimit -= x_lowerLimit/10
+        x_upperLimit = np.max(allPoint[:,0]) ; x_upperLimit += x_upperLimit/10
+        y_lowerLimit = np.min(allPoint[:,1]) ; y_lowerLimit -= y_lowerLimit/10
+        y_upperLimit = np.max(allPoint[:,1]) ; y_upperLimit += y_upperLimit/10
+        
+        ax.set(xlim=(x_lowerLimit, x_upperLimit), ylim=(y_lowerLimit, y_upperLimit))
         ax.set_title("Geodesic ball of the space of beta distribution")
         plt.xlabel(r'$\alpha$')
         plt.ylabel(r'$\beta$')
+        

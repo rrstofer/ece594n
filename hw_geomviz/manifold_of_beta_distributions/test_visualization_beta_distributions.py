@@ -32,10 +32,40 @@ class TestVisualizationBeta(tests.conftest.TestCase):
         points = gs.random.rand(2,2)
         self.beta_viz.plot(points)
 
+    def test_plot_rendering(self):
+        point = gs.random.rand(1,2)
+        size = gs.random.rand(1,2)
+        sampling_period = gs.random.rand(1,1)
+        self.beta_viz.plot_rendering(point, size, sampling_period)
+    
+    def test_plot_grid(self):
+        size = gs.random.rand(1,2)
+        point = gs.random.rand(1,2)
+        n_steps = gs.random.randint(1,100)
+        n_points = gs.random.randint(1,50)
+        step = gs.random.rand(1,2)
+        self.beta_viz.plot_grid(size, point, n_steps, n_points, step)
+
     def test_scatter_beta(self):
         num_points = random.randint(2,50)
         points = gs.random.rand(num_points,2)
         self.beta_viz.plot(points)
+
+    def test_plot_geodesic(self):
+        center = gs.random.rand(1,2)
+        end_point = gs.random.rand(1,2)
+
+        self.beta_viz.plot_geodesic(center, end_point)
+
+        theta = gs.random.uniform(-gs.pi, gs.pi)
+        angle = gs.cos(theta), gs.sin(theta)
+        direction = gs.transpose(gs.stack(angle))
+        ray_length = random.uniform(0,1)
+        direction_norm = self.Beta.metric.squared_norm(direction, center) ** (1 / 2)
+        unit_vector = direction / gs.expand_dims(direction_norm, 1)
+        initial_tangent_vec = ray_length * unit_vector
+
+        self.beta_viz.plot_geodesic(center, initial_tangent_vec)
 
     def test_plot_geodesic_ball(self):
         center = gs.random.rand(1,2)
@@ -50,6 +80,8 @@ class TestVisualizationBeta(tests.conftest.TestCase):
         
         self.beta_viz.plot_geodestic_ball(center,initial_vectors)
 
+    
+    
     @staticmethod
     def test_tutorial_matplotlib():
         visualization.tutorial_matplotlib()

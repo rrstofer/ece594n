@@ -86,7 +86,7 @@ class Beta:
     def plot_rendering(self,initial_point=[0,0],size=[10,10],sampling_period=1):
         """ Draws the beta manifold
 
-                by Yiliang Chen & Allen Wang 
+                by Yiliang Chen & Allen Wang & Ryan Stofer
 
                 Parameters
                 ----------
@@ -105,6 +105,16 @@ class Beta:
             raise ValueError(
                 "size should be a 1*2 array"
             )
+        if size[0] < 0:
+            raise ValueError("1st element of size {} must be a positive value".format(size[0]))
+        if size[1] < 0:
+            raise ValueError("2nd element of size {} must be a positive value".format(size[1]))
+        if type(size[0]) is not int:
+            raise ValueError("1st element of size {} must be an integer value".format(size[0]))
+        if type(size[1]) is not int:
+            raise ValueError("2nd element of size {} must be an integer value".format(size[1]))
+        if sampling_period < 0:
+            raise ValueError("Sampling period {} must be a positive value".format(sampling_period))
         x = gs.linspace(initial_point[0], (initial_point[0]+size[0]-1)*sampling_period, size[0])
         y = gs.linspace(initial_point[1], (initial_point[1]+size[1]-1)*sampling_period, size[1])
         points = [[i,j] for i in x for j in y]
@@ -141,6 +151,18 @@ class Beta:
             raise ValueError(
                 "size should be a 1*2 array"
             )
+        if size[0] < 0:
+            raise ValueError("1st element of size {} must be a positive value".format(size[0]))
+        if size[1] < 0:
+            raise ValueError("2nd element of size {} must be a positive value".format(size[1]))
+        if type(size[0]) is not int:
+            raise ValueError("1st element of size {} must be an integer value".format(size[0]))
+        if type(size[1]) is not int:
+            raise ValueError("2nd element of size {} must be an integer value".format(size[1]))
+        if type(n_steps) is not int:
+            raise ValueError("The number of steps {} must be an integer value".format(n_steps))
+        if type(n_points) is not int:
+            raise ValueError("The number of points {} must be an integer value".format(n_points))
         b = [(initial_point[0]+i*step) for i in range(size[0])]
         gF = [(initial_point[1]+i*step) for i in range(size[1])]
 

@@ -252,7 +252,8 @@ class Beta:
         
     def plot_geodestic_ball(self,
                       initial_point,
-                      tangent_vecs,
+                      n_rays,
+                      ray_length,
                       n_steps = 100,
                       n_points = 10,
                       **kwargs):
@@ -265,6 +266,12 @@ class Beta:
         points : array-like, shape=[..., 2]
             Point representing a beta distribution.
         """
+
+        theta = gs.linspace(-gs.pi, gs.pi, n_rays)
+        directions = gs.transpose(gs.stack((gs.cos(theta), gs.sin(theta))))
+        direction_norms = beta.metric.squared_norm(directions, initial_point) ** (1 / 2)
+        unit_vectors = directions / gs.expand_dims(direction_norms, 1)
+        tangent_vecs = ray_length * unit_vectors
         
         t = gs.linspace(0, 1, n_points)
         

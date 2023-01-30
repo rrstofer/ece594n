@@ -41,8 +41,7 @@ class Beta:
         Parameters
         ----------
         points : array-like, shape=[..., 2]
-            Points to be plotted.
-        
+            Beta manifold points to be plotted.
     	"""
         # TODO: figure out how this function works
         # points = gs.to_numpy(points)
@@ -65,10 +64,10 @@ class Beta:
         Parameters
         ----------
         points : array-like, shape=[..., 2]
-            Points to be plotted.
+            Beta manifold points to be plotted.
         size : array-like, shape=[..., 2]
-            Defines the range of the manifold to be shown
-        
+            Defines the range of the manifold to be shown.
+            Optional, default: None
     	"""
         points,limit = self.process_points(points)
         fig = plt.figure(figsize=(5, 5))
@@ -86,15 +85,19 @@ class Beta:
     def plot_rendering(self,initial_point=[0,0],size=[10,10],sampling_period=1):
         """ Draws the beta manifold
 
-                by Yiliang Chen & Allen Wang 
+        by Yiliang Chen & Allen Wang 
 
-                Parameters
-                ----------
-                size : array-like, shape=[..., 2]
-                    Defines the range of the samples to be shown
-
-                sampling_period: float, >0
-                    Defines the sampling period of the sampled data
+        Parameters
+        ----------
+        Initial_point : array-like, shape=[1, 2]
+            Defines initial point for plot rendering
+            Optional, default: [0,0]
+        size : array-like, shape=[..., 2]
+            Defines the range of the samples to be shown
+            Optional, default: [10,10]
+        sampling_period : float, >0
+            Defines the sampling period of the sampled data
+            Optional, default: 1
         """
         for value in initial_point:
                 if value < 0:
@@ -126,11 +129,19 @@ class Beta:
         Parameters
         ----------
         size : array-like, shape=[..., 2]
-            Defines the range of the grids to be shown
-
+            Defines the range of the grids to be shown.
+        initial_point : array-like, shape=[1,2]
+            Defines the initial point for plotting the beta manifold grid.
+            Optional, default: [0,0]
+        n_steps : int, >0
+            Defines the number of steps for integration.
+            Optional, default: 100
+        n_points : int, >0
+            Defines the number of points for interpolation.
+            Optional, default: 10
         step : float, >0
-            the length of a step for the grid
-
+            Defines the length of a step for the grid
+            Optional, default: 1
         """
         for value in initial_point:
             if value < 0:
@@ -174,7 +185,7 @@ class Beta:
         Parameters
         ----------
         points : array-like, shape=[..., 2]
-            Point representing a beta distribution.
+            Manifold point representing a beta distribution.
         """
         points,limit = self.process_points(points)
 
@@ -193,14 +204,26 @@ class Beta:
                       n_steps = 100,
                       n_points = 10,
                       **kwargs):
-        """ geomdesic plot of beta manifold
+        """ Geodesic plot of beta manifold
         
         by Sunpeng Duan & Allen Wang 
     
         Parameters
         ----------
-        points : array-like, shape=[..., 2]
-            Point representing a beta distribution.
+        initial_point : array-like, shape=[1, 2]
+            Starting point representing a beta distribution.
+        end_point : array-like, shape=[1, 2]
+            Ending point representing a beta distribution.
+            Optional, default: None.
+        initial_tangent_vec : array-like, shape=[1, 2]
+            Initial tangent vector for the starting point.
+            Optional, default: None.
+        n_steps : int, >0
+            Number of steps for integration.
+            Optional, default: 100.
+        n_points : int, >0
+            Number of points for interpolation.
+            Optional, default: 10.
         """
     
         
@@ -256,14 +279,22 @@ class Beta:
                       n_steps = 100,
                       n_points = 10,
                       **kwargs):
-        """ geomdesic plot of beta manifold
+        """ Geodesic ball plot of beta manifold
         
         by Sunpeng Duan & Allen Wang & Marianne Arriola
     
         Parameters
         ----------
-        points : array-like, shape=[..., 2]
+        inital_point : array-like, shape=[1, 2]
             Point representing a beta distribution.
+        tangent_vecs : array-like, shape=[..., 2]
+            Set of tangent vectors for geodesic ball.
+        n_steps : int, >0
+            Number of steps for integration.
+            Optional, default: 100.
+        n_points : int, >0
+            Number of points for interpolation.
+            Optional, default: 10.
         """
         
         t = gs.linspace(0, 1, n_points)

@@ -44,15 +44,13 @@ class Beta:
             Points to be plotted.
         
     	"""
-        # TODO: figure out how this function works
-        # points = gs.to_numpy(points)
         points = np.array(points)
         if len(points.shape) == 1:
             points = np.expand_dims(points, axis=0)
 
         if not len(points) > 0: raise ValueError("No points given")
         if not np.all(points > 0): raise ValueError("Points must be in the upper-right quadrant of Euclidean space")
-        if not ((points.shape[-1] == 2 and len(points.shape) == 2)): raise("Points must lie in 2D space")
+        if not ((points.shape[-1] == 2 and len(points.shape) == 2)): raise ValueError("Points must lie in 2D space")
         limit = np.max(points)
         limit += (limit/10)
         return points, limit
@@ -81,7 +79,6 @@ class Beta:
         plt.title('Points on 2D Manifold of Beta Distributions')
         plt.xlabel(r'$\alpha$')
         plt.ylabel(r'$\beta$')
-        #fig.show()
 
     def plot_rendering(self,initial_point=[0,0],size=[10,10],sampling_period=1):
         """ Draws the beta manifold
@@ -232,7 +229,6 @@ class Beta:
             ax.set_title("Geodesic between two beta distributions for the Fisher-Rao metric")
             plt.xlabel(r'$\alpha$')
             plt.ylabel(r'$\beta$')
-            #fig.show()
             
         if initial_tangent_vec is not None:
             if (initial_point < 0).any():
@@ -249,6 +245,83 @@ class Beta:
             ax.set_title("Geodesic between two beta distributions for the Fisher-Rao metric")
             plt.xlabel(r'$\alpha$')
             plt.ylabel(r'$\beta$')
+
+    def get_vector_field(self,
+                        initial_point,
+                        tangent_vecs,
+                        n_rays=50,
+                        ray_length=10,
+                        n_points=50,
+                        n_steps=10,
+                        **kwargs):
+        """ geomdesic plot of beta manifold
+        
+        by Sunpeng Duan & Allen Wang & Marianne Arriola
+    
+        Parameters
+        ----------
+        points : array-like, shape=[..., 2]
+            Point representing a beta distribution.
+        """                
+        if not np.all(initial_point > 0):
+            raise ValueError("Points must be in the upper-right quadrant of Euclidean space")
+        if not ((initial_point.shape[-1] == 2 and len(initial_point.shape) == 2)):
+            raise ValueError("Points must lie in 2D space")
+        if ((len(tangent_vecs.shape) != 2) or (tangent_vecs.shape[1] != 2)):
+            raise ValueError("Tangent vector needs to be of shape N x 2")
+
+        scaled_tangent_vecs = ray_length * tangent_vecs
+        
+        t = gs.linspace(0, 1, n_points)
+        for j in range(len(scaled_tangent_vecs)):
+            geod = beta.metric.geodesic(initial_point=initial_point, 
+                                        initial_tangent_vec=scaled_tangent_vecs[j, :],
+                                        n_steps = n_steps)
+            geod = gs.transpose(gs.array([geod(k) for k in t]))
+            geod = np.expand_dims(geod,0)
+            if j == 0:
+                geods = geod
+            else:
+                geods = np.vstack((geods, geod))
+        x_lowerLimit = np.min(geods[:,0,:]) ; x_lowerLimit -= x_lowerLimit/10
+        x_upperLimit = np.max(geods[:,0,:]) ; x_upperLimit += x_upperLimit/10
+        y_lowerLimit = np.min(geods[:,1,:]) ; y_lowerLimit -= y_lowerLimit/10
+        y_upperLimit = np.max(geods[:,1,:]) ; y_upperLimit += y_upperLimit/10
+        xlims = [x_lowerLimit, x_upperLimit] ; ylims = [y_lowerLimit, y_upperLimit]
+
+        return geods, xlims, ylims
+
+    def plot_vector_field(self,
+                        initial_point,
+                        tangent_vecs,
+                        n_rays=50,
+                        ray_length=10,
+                        n_points=50,
+                        n_steps=10,
+                        **kwargs):
+        """ geomdesic plot of beta manifold
+        
+        by Sunpeng Duan & Allen Wang & Marianne Arriola
+    
+        Parameters
+        ----------
+        points : array-like, shape=[..., 2]
+            Point representing a beta distribution.
+        """                
+        fig = plt.figure(figsize=(5, 5))
+        ax = fig.add_subplot(111)
+
+        geods, xlims, ylims = self.get_vector_field(initial_point, tangent_vecs, n_rays, ray_length, n_points, n_steps)
+        
+        for geod in geods:
+            ax.plot(*geod)
+        ax.scatter(initial_point[:,0],initial_point[:,1])
+
+        ax.set(xlim=(xlims[0], xlims[1]), ylim=(ylims[0], ylims[1]))
+        ax.set_title(f"Vector field in the manifold of beta distributions")
+        plt.xlabel(r'$\alpha$')
+        plt.ylabel(r'$\beta$')
+        plt.savefig('vf.png')
         
     def plot_geodestic_ball(self,
                       initial_point,
@@ -273,29 +346,16 @@ class Beta:
         unit_vectors = directions / gs.expand_dims(direction_norms, 1)
         tangent_vecs = ray_length * unit_vectors
         
-        t = gs.linspace(0, 1, n_points)
-        
         fig = plt.figure(figsize=(5, 5))
         ax = fig.add_subplot(111)
 
-        for j in range(len(tangent_vecs)):
-            geod = beta.metric.geodesic(initial_point=initial_point, 
-                                        initial_tangent_vec=tangent_vecs[j, :],
-                                        n_steps = n_steps)
-            if j == 0:
-                allPoint = geod(t)
-            else:
-                allPoint = np.concatenate((allPoint, geod(t)))
-        
-            ax.plot(*gs.transpose(gs.array([geod(k) for k in t])))
-
-        x_lowerLimit = np.min(allPoint[:,0]) ; x_lowerLimit -= x_lowerLimit/10
-        x_upperLimit = np.max(allPoint[:,0]) ; x_upperLimit += x_upperLimit/10
-        y_lowerLimit = np.min(allPoint[:,1]) ; y_lowerLimit -= y_lowerLimit/10
-        y_upperLimit = np.max(allPoint[:,1]) ; y_upperLimit += y_upperLimit/10
-        
-        ax.set(xlim=(x_lowerLimit, x_upperLimit), ylim=(y_lowerLimit, y_upperLimit))
-        ax.set_title("Geodesic ball of the space of beta distribution")
+        geods, xlims, ylims = self.get_vector_field(initial_point, tangent_vecs, n_rays, ray_length, n_points, n_steps)
+        for geod in geods:
+            ax.plot(*geod)
+        ax.scatter(initial_point[:,0],initial_point[:,1])
+            
+        ax.set(xlim=(xlims[0], xlims[1]), ylim=(ylims[0], ylims[1]))
+        ax.set_title("Geodesic ball in the manifold of beta distributions")
         plt.xlabel(r'$\alpha$')
         plt.ylabel(r'$\beta$')
-        
+        plt.savefig('test.png')

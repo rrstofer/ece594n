@@ -40,15 +40,16 @@ class TestVisualizationBeta(tests.conftest.TestCase):
     def test_plot_geodesic_ball(self):
         center = gs.random.rand(1,2)
         n_rays = random.randint(2,100)
-        theta = gs.linspace(-gs.pi, gs.pi, n_rays)
-        directions = gs.transpose(gs.stack((gs.cos(theta), gs.sin(theta))))
+        ray_length = 1 - random.uniform(0.1,1)
+        self.beta_viz.plot_geodestic_ball(center,n_rays,ray_length)
 
-        ray_length = 1 - random.uniform(0,1)
-        direction_norms = self.Beta.metric.squared_norm(directions, center) ** (1 / 2)
-        unit_vectors = directions / gs.expand_dims(direction_norms, 1)
-        initial_vectors = ray_length * unit_vectors
-        
-        self.beta_viz.plot_geodestic_ball(center,initial_vectors)
+    def test_plot_vector_field(self):
+        center = gs.random.rand(1,2)
+        num_vecs = gs.random.randint(1,20)
+        tangent_vector = gs.array([[random.uniform(-1, 1) for i in range(2)] for j in range(num_vecs)])
+        n_rays = random.randint(2,100)
+        ray_length = 1 - random.uniform(0.1,1)
+        self.beta_viz.plot_vector_field(center,tangent_vector,n_rays,ray_length)
     
     def test_plot_grid(self):
         size = gs.array([random.randint(1, 6) for i in range(2)])
@@ -79,6 +80,7 @@ class TestVisualizationBeta(tests.conftest.TestCase):
         tangent_vector = gs.array([random.uniform(-1, 1), random.uniform(-1, 1)])
         self.beta_viz.plot_geodesic(initial_point= point_a, initial_tangent_vec= tangent_vector, 
                                     n_points = n_points, color = cc, n_steps= n_steps)
+                                    
 
     @staticmethod
     def test_tutorial_matplotlib():

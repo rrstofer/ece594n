@@ -393,7 +393,6 @@ class Beta:
         ax.set_title("Vector field in the manifold of beta distributions")
         plt.xlabel(r"$\alpha$")
         plt.ylabel(r"$\beta$")
-        plt.savefig("vf.png")
 
     def plot_geodestic_ball(
         self,
@@ -444,4 +443,3 @@ class Beta:
         ax.set_title("Geodesic ball in the manifold of beta distributions")
         plt.xlabel(r"$\alpha$")
         plt.ylabel(r"$\beta$")
-        plt.savefig("test.png")

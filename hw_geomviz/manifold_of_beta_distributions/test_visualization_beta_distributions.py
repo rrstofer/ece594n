@@ -7,7 +7,6 @@ import matplotlib
 import matplotlib.pyplot as plt
 import tests.conftest
 from geomstats.information_geometry.beta import BetaDistributions
-#from hw_geomviz.manifold_of_beta_distributions.Beta_Visualization import Beta
 
 matplotlib.use("Agg")  # NOQA
 
@@ -39,9 +38,8 @@ class TestVisualizationBeta(tests.conftest.TestCase):
         tan_vec = gs.array(
             [[random.uniform(-1, 1) for i in range(2)] for j in range(num_vec)]
         )
-        n_rays = random.randint(2, 100)
         ray_length = 1 - random.uniform(0.1, 1)
-        self.beta_viz.plot_vector_field(center, tan_vec, n_rays, ray_length)
+        self.beta_viz.plot_vector_field(center, tan_vec, ray_length)
 
     def test_plot_grid(self):
         size = gs.array([random.randint(1, 6) for i in range(2)])

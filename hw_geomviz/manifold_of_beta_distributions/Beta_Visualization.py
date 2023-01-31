@@ -80,11 +80,16 @@ class Beta:
         else:
             ax.set(xlim=(0, size[0]), ylim=(0, size[1]))
         ax.scatter(points[:, 0], points[:, 1], **kwargs)
-        plt.title("Points on 2D Manifold of Beta Distributions")
+        plt.title("Points on 2D manifold of beta distributions")
         plt.xlabel(r"$\alpha$")
         plt.ylabel(r"$\beta$")
 
-    def plot_rendering(self, initial_point=[0, 0], size=[10, 10], sampling_period=1):
+    def plot_rendering(
+        self,
+        initial_point=[0, 0],
+        size=[10, 10],
+        sampling_period=1
+    ):
         """Draws the beta manifold.
 
         by Yiliang Chen & Allen Wang
@@ -133,7 +138,13 @@ class Beta:
         plt.ylabel(r"$\beta$")
 
     def plot_grid(
-        self, size, initial_point=[0, 0], n_steps=100, n_points=10, step=1, **kwargs
+        self,
+        size,
+        initial_point=[0, 0],
+        n_steps=100,
+        n_points=10,
+        step=1,
+        **kwargs
     ):
         """Draws the grids of beta manifold.
 
@@ -191,6 +202,7 @@ class Beta:
                     ax.plot(*gs.transpose(gs.array([grid_v(k) for k in t])))
         plt.xlabel(r"$\alpha$")
         plt.ylabel(r"$\beta$")
+        plt.title("Grids in the beta manifold")
 
     def scatter(self, points, **kwargs):
         """Scatter plot of beta manifold.
@@ -208,9 +220,9 @@ class Beta:
         ax = fig.add_subplot(111)
         ax.set(xlim=(0, limit), ylim=(0, limit))
         ax.scatter(points[:, 0], points[:, 1], **kwargs)
-        ax.set_title("Scatter plot of beta manifolds")
         plt.xlabel(r"$\alpha$")
         plt.ylabel(r"$\beta$")
+        ax.set_title("Scatter plot of beta manifolds")
 
     def plot_geodesic(
         self,
@@ -258,14 +270,16 @@ class Beta:
                 x, y = point
                 if x < 0 or y < 0:
                     raise ValueError(
-                        "Point {} is not in the first quadrant" \
+                        "Point {} is not in the first quadrant"
                         .format(point)
                     )
 
             u_lim = np.max(list(zip(initial_point, end_point))) + 1
             l_lim = np.min(list(zip(initial_point, end_point))) - 1
             geod = beta.metric.geodesic(
-                initial_point=initial_point, end_point=end_point, n_steps=n_steps
+                initial_point=initial_point,
+                end_point=end_point,
+                n_steps=n_steps
             )(t)
 
             fig = plt.figure(figsize=(5, 5))
@@ -328,7 +342,6 @@ class Beta:
         if (len(tangent_vecs.shape) != 2 or
                 tangent_vecs.shape[1] != 2):
             raise ValueError("Tangent vector needs to be of shape N x 2")
-
         scaled_tangent_vecs = ray_length * tangent_vecs
 
         t = gs.linspace(0, 1, n_points)
@@ -361,8 +374,7 @@ class Beta:
         self,
         initial_point,
         tangent_vecs,
-        n_rays=50,
-        ray_length=10,
+        ray_length=0.25,
         n_points=50,
         n_steps=10,
         **kwargs,
@@ -378,17 +390,18 @@ class Beta:
         points : array-like, shape=[..., 2]
             Point representing a beta distribution.
         """
+        center, _ = self.process_points(initial_point)
+
         fig = plt.figure(figsize=(5, 5))
         ax = fig.add_subplot(111)
 
         geods, xlims, ylims = self.get_vector_field(
-            initial_point, tangent_vecs, ray_length, n_points, n_steps
+            center, tangent_vecs, ray_length, n_points, n_steps
         )
 
         for geod in geods:
             ax.plot(*geod)
-        ax.scatter(initial_point[:, 0], initial_point[:, 1])
-
+        ax.scatter(center[:, 0], center[:, 1])
         ax.set(xlim=(xlims[0], xlims[1]), ylim=(ylims[0], ylims[1]))
         ax.set_title("Vector field in the manifold of beta distributions")
         plt.xlabel(r"$\alpha$")
@@ -422,9 +435,10 @@ class Beta:
             Number of points for interpolation.
             Optional, default: 10.
         """
+        center, _ = self.process_points(initial_point)
         theta = gs.linspace(-gs.pi, gs.pi, n_rays)
         directions = gs.transpose(gs.stack((gs.cos(theta), gs.sin(theta))))
-        direction_norms = beta.metric.squared_norm(directions, initial_point)
+        direction_norms = beta.metric.squared_norm(directions, center)
         direction_norms = direction_norms ** (1 / 2)
         unit_vectors = directions / gs.expand_dims(direction_norms, 1)
         tangent_vecs = ray_length * unit_vectors
@@ -433,11 +447,11 @@ class Beta:
         ax = fig.add_subplot(111)
 
         geods, xlims, ylims = self.get_vector_field(
-            initial_point, tangent_vecs, ray_length, n_points, n_steps
+            center, tangent_vecs, ray_length, n_points, n_steps
         )
         for geod in geods:
             ax.plot(*geod)
-        ax.scatter(initial_point[:, 0], initial_point[:, 1])
+        ax.scatter(center[:, 0], center[:, 1])
 
         ax.set(xlim=(xlims[0], xlims[1]), ylim=(ylims[0], ylims[1]))
         ax.set_title("Geodesic ball in the manifold of beta distributions")

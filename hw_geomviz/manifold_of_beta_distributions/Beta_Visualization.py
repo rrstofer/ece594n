@@ -258,18 +258,19 @@ class Beta:
                 x, y = point
                 if x < 0 or y < 0:
                     raise ValueError(
-                        "Point {} is not in the first quadrant".format(point)
+                        "Point {} is not in the first quadrant" \
+                        .format(point)
                     )
 
-            upperLimit = np.max(list(zip(initial_point, end_point))) + 1
-            lowerLimit = np.min(list(zip(initial_point, end_point))) - 1
+            u_lim = np.max(list(zip(initial_point, end_point))) + 1
+            l_lim = np.min(list(zip(initial_point, end_point))) - 1
             geod = beta.metric.geodesic(
                 initial_point=initial_point, end_point=end_point, n_steps=n_steps
             )(t)
 
             fig = plt.figure(figsize=(5, 5))
             ax = fig.add_subplot(111)
-            ax.set(xlim=(lowerLimit, upperLimit), ylim=(lowerLimit, upperLimit))
+            ax.set(xlim=(l_lim, u_lim), ylim=(l_lim, u_lim))
             ax.scatter(geod[:, 0], geod[:, 1], **kwargs)
             ax.set_title(
                 "Geodesic between two beta distributions for Fisher-Rao metric"
@@ -285,11 +286,11 @@ class Beta:
                 initial_tangent_vec=initial_tangent_vec,
                 n_steps=n_steps,
             )(t)
-            upperLimit = np.max(geod) + 1
-            lowerLimit = np.min(geod) - 1
+            u_lim = np.max(geod) + 1
+            l_lim = np.min(geod) - 1
             fig = plt.figure(figsize=(5, 5))
             ax = fig.add_subplot(111)
-            ax.set(xlim=(lowerLimit, upperLimit), ylim=(lowerLimit, upperLimit))
+            ax.set(xlim=(l_lim, u_lim), ylim=(l_lim, u_lim))
             ax.scatter(geod[:, 0], geod[:, 1], **kwargs)
             ax.set_title(
                 "Geodesic between two beta distributions for Fisher-Rao metric"
@@ -321,9 +322,11 @@ class Beta:
             raise ValueError(
                 "Points must be in the upper-right quadrant of Euclidean space"
             )
-        if not ((initial_point.shape[-1] == 2 and len(initial_point.shape) == 2)):
+        if not (initial_point.shape[-1] == 2 and
+                len(initial_point.shape) == 2):
             raise ValueError("Points must lie in 2D space")
-        if (len(tangent_vecs.shape) != 2) or (tangent_vecs.shape[1] != 2):
+        if (len(tangent_vecs.shape) != 2 or
+                tangent_vecs.shape[1] != 2):
             raise ValueError("Tangent vector needs to be of shape N x 2")
 
         scaled_tangent_vecs = ray_length * tangent_vecs
@@ -422,7 +425,8 @@ class Beta:
         """
         theta = gs.linspace(-gs.pi, gs.pi, n_rays)
         directions = gs.transpose(gs.stack((gs.cos(theta), gs.sin(theta))))
-        direction_norms = beta.metric.squared_norm(directions, initial_point) ** (1 / 2)
+        direction_norms = beta.metric.squared_norm(directions, initial_point)
+        direction_norms = direction_norms ** (1 / 2)
         unit_vectors = directions / gs.expand_dims(direction_norms, 1)
         tangent_vecs = ray_length * unit_vectors
 

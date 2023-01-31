@@ -382,7 +382,7 @@ class Beta:
         ax = fig.add_subplot(111)
 
         geods, xlims, ylims = self.get_vector_field(
-            initial_point, tangent_vecs, n_rays, ray_length, n_points, n_steps
+            initial_point, tangent_vecs, ray_length, n_points, n_steps
         )
 
         for geod in geods:
@@ -433,7 +433,7 @@ class Beta:
         ax = fig.add_subplot(111)
 
         geods, xlims, ylims = self.get_vector_field(
-            initial_point, tangent_vecs, n_rays, ray_length, n_points, n_steps
+            initial_point, tangent_vecs, ray_length, n_points, n_steps
         )
         for geod in geods:
             ax.plot(*geod)

@@ -2,7 +2,7 @@
 
 Goal: Define the question of your final project, find a dataset, and visualize it.
 
-- Deadline for project reports: Monday 02/20/2023.
+- Deadline for project reports: Monday 02/27/2023.
 
 **Examples**: You can find [here](https://github.com/geomstats/geomstats/tree/master/notebooks), within the "real world applications" notebooks, examples of potential projects.
 
@@ -12,12 +12,13 @@ Send the title of your project, and names of its team members, through slack to 
 
 # Guidelines
 
+- Create a new GitHub branch for your project.
 - Create a new folder in this folder with the name of your project.
 - In this new folder:
   - Add python files.
   - Add the Jupyter notebook that represents your project's report.
   - Make sure to indicate which teammate did which part of the work.
-- You can submit code to this repository anytime until the deadline: 02/20/2023
+- You can submit code to this repository anytime until the deadline: 02/20/2023, through a pull request to this repository.
 
 
 # Grading Criteria
